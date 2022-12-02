@@ -24,7 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView signup;
+    TextView signup,forget;
     EditText userid, password;
     Button btnLogin;
     ProgressDialog progressDialog;
@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         btnLogin = findViewById(R.id.login_btn);
         signup = findViewById(R.id.sign_up);
+        forget=findViewById(R.id.forget);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,6 +100,21 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
+            }
+        });
+        forget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (userid.getText().toString().isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Please Enter Your UserId/Email", Toast.LENGTH_LONG).show();
+
+                }else{
+                    String str = userid.getText().toString();
+                    Intent intent = new Intent(getApplicationContext(), UpdatePasswordActivity.class);
+                    intent.putExtra("userID", str);
+                    startActivity(intent);
+                }
+
             }
         });
     }

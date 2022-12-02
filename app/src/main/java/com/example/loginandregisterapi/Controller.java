@@ -72,7 +72,7 @@ public class Controller {
     public void ApiCallBackForLogin(Context context, String EndUrl, JsonObject jsonobj) {
         this.context = context;
         Api api = getClient().create(Api.class);
-        Call<ResponseBody> call = api.RegisterApi(jsonobj, EndUrl);
+        Call<ResponseBody> call = api.LoginApi(jsonobj, EndUrl);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
