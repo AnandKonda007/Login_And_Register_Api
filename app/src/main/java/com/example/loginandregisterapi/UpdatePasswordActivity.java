@@ -28,7 +28,7 @@ public class UpdatePasswordActivity extends AppCompatActivity {
     EditText userid, newpassword, confirmpassword;
     Button submit;
     ProgressDialog progressDialog;
-    String tokenValue="";
+    String tokenValue = "";
 
 
     @Override
@@ -36,14 +36,15 @@ public class UpdatePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_password);
         progressDialog = new ProgressDialog(UpdatePasswordActivity.this);
-        progressDialog.setTitle("Loading....");
+        progressDialog.setTitle("UpdatePassword under process please wait....");
         actions();
         Controller.getInstance().fillcontext(getApplicationContext());
         getTokenFromSharedPreference();
     }
-    private void getTokenFromSharedPreference(){
-        SharedPreferences sharedPref =  getSharedPreferences("tokenPrefs", MODE_PRIVATE);
-       tokenValue= sharedPref.getString("token",null);
+
+    private void getTokenFromSharedPreference() {
+        SharedPreferences sharedPref = getSharedPreferences("tokenPrefs", MODE_PRIVATE);
+        tokenValue = sharedPref.getString("token", null);
     }
 
     private void actions() {
@@ -54,19 +55,23 @@ public class UpdatePasswordActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Controller.getInstance().checkNetwork()) {
+                if (userid.getText().toString().isEmpty() || newpassword.getText().toString().isEmpty() || confirmpassword.getText().toString().isEmpty()) {
+                    Toast.makeText(UpdatePasswordActivity.this, "Please Enter Required Fields", Toast.LENGTH_SHORT).show();
+                    if (Controller.getInstance().checkNetwork()) {
+                    } else {
+                        Toast.makeText(UpdatePasswordActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
+                    }
+                } else if (newpassword.getText().toString().equals(confirmpassword.getText().toString())) {
+                    //Toast.makeText(UpdatePasswordActivity.this, "Update Password Successfully", Toast.LENGTH_SHORT).show();
                     progressDialog.show();
                     loadUpdateApiParams();
-                } else {
-                    Toast.makeText(UpdatePasswordActivity.this, "No internet connection.", Toast.LENGTH_LONG).show();
-                }
-               /* if (newpassword.getText().toString().equals(confirmpassword.getText().toString())) {
-                    Toast.makeText(UpdatePasswordActivity.this, "Update Password Successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
 
                 } else {
                     Toast.makeText(UpdatePasswordActivity.this, "Check your password entered", Toast.LENGTH_SHORT).show();
-                }*/
+
+                }
+
+
             }
         });
     }
@@ -101,8 +106,7 @@ public class UpdatePasswordActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
             } else if (loginResponseModel.getResponse() == 0) {
                 Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
@@ -120,6 +124,6 @@ public class UpdatePasswordActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Controller.getInstance().ApiCallBackForPutMethods(UpdatePasswordActivity.this,tokenValue ,"seller/SellerUpdatePassword", CheckUserObj,"updatepswApi");
+        Controller.getInstance().ApiCallBackForPutMethods(UpdatePasswordActivity.this, tokenValue, "seller/SellerUpdatePassword", CheckUserObj, "updatepswApi");
     }
 }

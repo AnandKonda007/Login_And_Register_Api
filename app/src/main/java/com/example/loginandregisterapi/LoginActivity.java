@@ -69,7 +69,9 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("loginrespoise", "call" + loginResponseModel.getResponse());
             if (loginResponseModel.getResponse() == 3) {
                 ///token
-               if( stroreaccesstoken(loginResponseModel.getJsontoken())){
+                if (stroreaccesstoken(loginResponseModel.getJsontoken())) {
+                    userid.setText("");
+                    password.setText("");
                     startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                     Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -78,18 +80,19 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-public boolean stroreaccesstoken(String token){
-    SharedPreferences sharedPref =  getSharedPreferences("tokenPrefs", MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPref.edit();
-    editor.putString("token",token);
-    Log.e("toekn", "call" + token);
 
-    if(editor.commit()){
-        return true;
-    }else{
-        return false;
+    public boolean stroreaccesstoken(String token) {
+        SharedPreferences sharedPref = getSharedPreferences("tokenPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("token", token);
+        Log.e("toekn", "call" + token);
+
+        if (editor.commit()) {
+            return true;
+        } else {
+            return false;
+        }
     }
-}
 
     private void actions() {
         userid = findViewById(R.id.userid);
@@ -149,6 +152,6 @@ public boolean stroreaccesstoken(String token){
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Controller.getInstance().ApiCallBackForPostMethods(LoginActivity.this, "seller/Sellerlogin", CheckUserObj,"loginApi");
+        Controller.getInstance().ApiCallBackForPostMethods(LoginActivity.this, "seller/Sellerlogin", CheckUserObj, "loginApi");
     }
 }

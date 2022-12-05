@@ -12,13 +12,13 @@ import retrofit2.http.Url;
 
 public interface Api {
     String BASE_URL = "http://liveapi-vmart.softexer.com/api/";
-    String tokenString="vmart";
+    String tokenString = "vmart";
+
     @POST
     Call<ResponseBody> postMethodApi(@Body JsonObject jsonobject, @Url String url);
 
     @PUT
-    Call<ResponseBody> putMethodApi(@Header (tokenString) String token,@Body JsonObject jsonobject, @Url String url);
-
+    Call<ResponseBody> putMethodApi(@Header(tokenString) String token, @Body JsonObject jsonobject, @Url String url);
 
 
 }
