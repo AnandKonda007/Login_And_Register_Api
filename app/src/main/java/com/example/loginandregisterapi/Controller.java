@@ -69,11 +69,10 @@ public class Controller {
         return false;
     }
 
-    public void ApiCallBackForLogin(Context context, String EndUrl, JsonObject jsonobj) {
+    public void ApiCallBackForPostMethods(Context context, String EndUrl, JsonObject jsonobj,String eventBusMsg) {
         this.context = context;
         Api api = getClient().create(Api.class);
-        Call<ResponseBody> call = api.LoginApi(jsonobj, EndUrl);
-
+        Call<ResponseBody> call = api.postMethodApi(jsonobj, EndUrl);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -81,23 +80,20 @@ public class Controller {
                 if (response.body() != null) {
                     try {
                         Body = new String(response.body().bytes());
-                        EventBus.getDefault().post(new MessageEvent(Body));
+                        EventBus.getDefault().post(new MessageEvent(Body,eventBusMsg));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
                 } else {
-                    EventBus.getDefault().post(new MessageEvent(Body));
+                    EventBus.getDefault().post(new MessageEvent(Body,eventBusMsg));
                 }
 
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                EventBus.getDefault().post(new MessageEvent(null));
-
-
+                EventBus.getDefault().post(new MessageEvent(null,"onfailure"));
                 Toast.makeText(context, ":" + t.getMessage().toString(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -105,11 +101,10 @@ public class Controller {
 
     }
 
-    public void ApiCallBackForRegister(Context context, String EndUrl, JsonObject jsonobj) {
+   public void ApiCallBackForPutMethods(Context context, String token,String EndUrl, JsonObject jsonobj,String eventBusMsg) {
         this.context = context;
         Api api = getClient().create(Api.class);
-        Call<ResponseBody> call = api.RegisterApi(jsonobj, EndUrl);
-
+        Call<ResponseBody> call = api.putMethodApi(token,jsonobj, EndUrl);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -117,13 +112,13 @@ public class Controller {
                 if (response.body() != null) {
                     try {
                         Body = new String(response.body().bytes());
-                        EventBus.getDefault().post(new MessageEvent(Body));
+                        EventBus.getDefault().post(new MessageEvent(Body,eventBusMsg));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
                 } else {
-                    EventBus.getDefault().post(new MessageEvent(Body));
+                    EventBus.getDefault().post(new MessageEvent(Body,eventBusMsg));
                 }
 
             }
@@ -131,22 +126,18 @@ public class Controller {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
 
-                EventBus.getDefault().post(new MessageEvent(null));
-
-
+                EventBus.getDefault().post(new MessageEvent(null,"onfailure"));
                 Toast.makeText(context, ":" + t.getMessage().toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
-
     }
-
     public static class MessageEvent {
-        public String body;
+        public String body, msg;
 
-        public MessageEvent(String body) {
+        public MessageEvent(String body,String message) {
             this.body = body;
-
+            this.msg=message;
         }
     }
 }

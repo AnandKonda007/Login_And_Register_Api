@@ -56,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void onEventMainThread(Controller.MessageEvent messageEvent) {
         progressDialog.dismiss();
         Log.e("response", "call" + messageEvent.body);
-        if (messageEvent.body != null) {
+        if (messageEvent.body != null && messageEvent.msg.equals("registerApi")) {
             try {
                 JSONObject jObj = new JSONObject(messageEvent.body);
             } catch (JSONException e) {
@@ -154,7 +154,7 @@ public class RegisterActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Controller.getInstance().ApiCallBackForRegister(RegisterActivity.this, "seller/SellerRegister", CheckUserObj);
+        Controller.getInstance().ApiCallBackForPostMethods(RegisterActivity.this, "seller/SellerRegister", CheckUserObj,"registerApi");
 
     }
 

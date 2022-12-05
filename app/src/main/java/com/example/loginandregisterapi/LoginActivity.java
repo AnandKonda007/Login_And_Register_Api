@@ -3,7 +3,9 @@ package com.example.loginandregisterapi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView signup,forget;
+    TextView signup, forget;
     EditText userid, password;
     Button btnLogin;
     ProgressDialog progressDialog;
@@ -56,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onEventMainThread(Controller.MessageEvent messageEvent) {
         progressDialog.dismiss();
         Log.e("response", "call" + messageEvent.body);
-        if (messageEvent.body != null) {
+        if (messageEvent.body != null && messageEvent.msg.equals("loginApi")) {
             try {
                 JSONObject jObj = new JSONObject(messageEvent.body);
             } catch (JSONException e) {
@@ -65,22 +67,36 @@ public class LoginActivity extends AppCompatActivity {
             Gson gson = new Gson();
             LoginResponseModel loginResponseModel = gson.fromJson(messageEvent.body, LoginResponseModel.class);
             Log.e("loginrespoise", "call" + loginResponseModel.getResponse());
-            if (loginResponseModel.getResponse()==3) {
-                startActivity(new Intent(getApplicationContext(),HomeActivity.class));
-                Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
+            if (loginResponseModel.getResponse() == 3) {
+                ///token
+               if( stroreaccesstoken(loginResponseModel.getJsontoken())){
+                    startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                    Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(getApplicationContext(), loginResponseModel.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
+public boolean stroreaccesstoken(String token){
+    SharedPreferences sharedPref =  getSharedPreferences("tokenPrefs", MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPref.edit();
+    editor.putString("token",token);
+    Log.e("toekn", "call" + token);
 
+    if(editor.commit()){
+        return true;
+    }else{
+        return false;
+    }
+}
 
     private void actions() {
         userid = findViewById(R.id.userid);
         password = findViewById(R.id.password);
         btnLogin = findViewById(R.id.login_btn);
         signup = findViewById(R.id.sign_up);
-        forget=findViewById(R.id.forget);
+        forget = findViewById(R.id.forget);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
         forget.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (userid.getText().toString().isEmpty()) {
+               /* if (userid.getText().toString().isEmpty()) {
                     Toast.makeText(LoginActivity.this, "Please Enter Your UserId/Email", Toast.LENGTH_LONG).show();
 
                 }else{
@@ -113,7 +129,8 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), UpdatePasswordActivity.class);
                     intent.putExtra("userID", str);
                     startActivity(intent);
-                }
+                }*/
+                startActivity(new Intent(getApplicationContext(), UpdatePasswordActivity.class));
 
             }
         });
@@ -132,6 +149,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Controller.getInstance().ApiCallBackForLogin(LoginActivity.this, "seller/Sellerlogin", CheckUserObj);
+        Controller.getInstance().ApiCallBackForPostMethods(LoginActivity.this, "seller/Sellerlogin", CheckUserObj,"loginApi");
     }
 }
